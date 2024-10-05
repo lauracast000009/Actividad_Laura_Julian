@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listas de Canciones Favoritas</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+            color: #333;
+            margin: 0;
+            padding: 40px 20px;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #1a1a1a;
+            font-size: 36px;
+            margin-bottom: 40px;
+            font-weight: 300;
+            letter-spacing: 1px;
+            position: relative;
+            text-transform: uppercase;
+        }
+        h1::before, h1::after {
+            content: '★';
+            color: #3498db;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+        }
+        h1::before {
+            left: 20px;
+        }
+        h1::after {
+            right: 20px;
+        }
+        .playlist-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 30px;
+            perspective: 1000px;
+        }
+        .playlist {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.4s ease;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+        .playlist:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        h2 {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        h2::before {
+            content: '🎵';
+            margin-right: 10px;
+            font-size: 28px;
+        }
+        ol {
+            padding-left: 20px;
+            margin: 0;
+            counter-reset: song-counter;
+        }
+        li {
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            color: #34495e;
+            counter-increment: song-counter;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            padding-right: 30px;
+        }
+        li:hover {
+            background-color: #f8f9fa;
+            padding-left: 10px;
+            color: #3498db;
+        }
+        li::after {
+            content: '▶';
+            position: absolute;
+            right: 10px;
+            opacity: 0;
+            color: #3498db;
+            transition: opacity 0.3s ease;
+        }
+        li:hover::after {
+            opacity: 1;
+        }
+        li::marker {
+            color: #3498db;
+            font-weight: bold;
+        }
+        li:last-child {
+            border-bottom: none;
+        }
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            margin-top: 40px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            background-color: #3498db;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-left: auto;
+            margin-right: auto;
+        }
+    
+        .btn:hover {
+            background-color: #2980b9;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
+        }
+    
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%) rotate(45deg);
+            transition: width 0.5s ease, height 0.5s ease;
+        }
+    
+        .btn:hover::before {
+            width: 0;
+            height: 0;
+        }
+    
+        /* Centrar el botón en el contenedor */
+        .container {
+            text-align: center;
+        }
+        .playlist::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #e74c3c, #f1c40f, #2ecc71);
+            background-size: 300% 300%;
+            animation: gradient 4s ease infinite;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        @media (max-width: 768px) {
+            .playlist {
+                flex: 100%;
+            }
+            h1::before, h1::after {
+                display: none;
+            }
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const songs = document.querySelectorAll('li');
+            songs.forEach(song => {
+                song.addEventListener('mouseover', function(e) {
+                    animateNote(e);
+                });
+                song.addEventListener('click', function(e) {
+                    animateNote(e);
+                });
+            });
+
+            function animateNote(e) {
+                const note = document.createElement('span');
+                note.textContent = '♪';
+                note.className = 'music-note';
+                note.style.left = e.clientX + 'px';
+                note.style.top = e.clientY + 'px';
+                document.body.appendChild(note);
+                
+                note.style.animation = 'float 1s ease-out';
+                note.addEventListener('animationend', function() {
+                    note.remove();
+                });
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Listas de Canciones Favoritas</h1>
+        <div class="playlist-container">
+            <div class="playlist">
+                <h2>Laura</h2>
+                <ol>
+                    <li>Shape of You - Ed Sheeran</li>
+                    <li>Blinding Lights - The Weeknd</li>
+                    <li>Levitating - Dua Lipa</li>
+                    <li>Drivers License - Olivia Rodrigo</li>
+                    <li>Don't Start Now - Dua Lipa</li>
+                </ol>
+            </div>
+            <div class="playlist">
+                <h2>Julián</h2>
+                <ol>
+                    <li>Periódico de ayer - Héctor Lavoe</li>
+                    <li>Emae - Ray Pérez</li>
+                    <li>Hagamos lo que diga el corazón - Grupo niche</li>
+                    <li>Mi desengaño - Roberto Roena</li>
+                    <li>Decisiones - Ruben Blades</li>
+                </ol>
+            </div>
+        </div>
+        <!-- Botón que redirige a index2.html -->
+        <a href="index2.html" class="btn">Ver imágenes relacionadas a las canciones</a>
+    </div>
+</body>
+</html>
